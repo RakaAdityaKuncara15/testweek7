@@ -2,20 +2,20 @@ const jwt = require('jsonwebtoken');
 const { Users } = require('../models');
 require('dotenv').config();
 
-// 유저 인증에 실패하면 403 상태 코드를 반환한다.
+// If user authentication fails, a 403 status code is returned.
 module.exports = async (req, res, next) => {
   try {
     const cookies = req.cookies[process.env.COOKIE_NAME];
     if (!cookies) {
       return res.status(403).send({
-        errorMessage: '로그인이 필요한 기능입니다.',
+        errorMessage: 'This feature requires login.',
       });
     }
 
     const [tokenType, tokenValue] = cookies.split(' ');
     if (tokenType !== 'Bearer') {
       return res.status(403).send({
-        errorMessage: '전달된 쿠키에서 오류가 발생하였습니다.',
+        errorMessage: 'An error occurred in the forwarded cookie.',
       });
     }
 
@@ -27,7 +27,7 @@ module.exports = async (req, res, next) => {
   } catch (error) {
     console.trace(error);
     return res.status(403).send({
-      errorMessage: '로그인이 필요한 기능입니다.',
+      errorMessage: 'This feature requires login.',
     });
   }
 };

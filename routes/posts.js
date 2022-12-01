@@ -17,13 +17,13 @@ const postSchema = Joi.object({
   content: Joi.string().required(),
 });
 
-const RE_TITLE = /^[a-zA-Z0-9\s\S]{1,40}$/; //게시글 제목 정규 표현식
-const RE_HTML_ERROR = /<[\s\S]*?>/; // 게시글 HTML 에러 정규 표현식
-const RE_CONTENT = /^[\s\S]{1,3000}$/; // 게시글 내용 정규 표현식
+const RE_TITLE = /^[a-zA-Z0-9\s\S]{1,40}$/; //Post title regular expression
+const RE_HTML_ERROR = /<[\s\S]*?>/; // Posts HTML Error Regular Expression
+const RE_CONTENT = /^[\s\S]{1,3000}$/; // Post Content Regular Expression
 
 router
   .route('/')
-  // 모든 게시글 데이터를 반환하는 함수
+  // A function that returns all post data
   .get(async (req, res) => {
     try {
       const likes = await Likes.findAll();
@@ -50,18 +50,18 @@ router
     } catch (error) {
       console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
       return res.status(400).json({
-        errorMessage: '게시글 조회에 실패하였습니다.',
+        errorMessage: 'Failed to retrieve post.',
       });
     }
   })
 
-  //개시글 생성
+  //create opening post
   .post(authMiddleware, async (req, res) => {
     try {
       const resultSchema = postSchema.validate(req.body);
       if (resultSchema.error) {
         return res.status(412).json({
-          errorMessage: '데이터 형식이 올바르지 않습니다.',
+          errorMessage: 'The data format is incorrect.',
         });
       }
 
@@ -73,28 +73,28 @@ router
         isRegexValidation(title, RE_HTML_ERROR)
       ) {
         return res.status(412).json({
-          errorMessage: '게시글 제목의 형식이 일치하지 않습니다.',
+          errorMessage: 'The format of the post title does not match.',
         });
       }
       if (!isRegexValidation(content, RE_CONTENT)) {
         return res.status(412).json({
-          errorMessage: '게시글 내용의 형식이 일치하지 않습니다.',
+          errorMessage: 'The format of the post content does not match.',
         });
       }
 
       await Posts.create({ userId, title, content });
-      return res.status(201).json({ message: '게시글 작성에 성공하였습니다.' });
+      return res.status(201).json({ message: 'You have succeeded in writing a post.' });
     } catch (error) {
       console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
       return res.status(400).json({
-        errorMessage: '게시글 작성에 실패하였습니다.',
+        errorMessage: 'Failed to write post.',
       });
     }
   });
 
 router
   .route('/:postId')
-  // 게시글 상세 조회
+  // Post detail lookup
   .get(async (req, res) => {
     try {
       const { postId } = req.params;
@@ -141,7 +141,7 @@ router
     } catch (error) {
       console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
       return res.status(400).json({
-        errorMessage: '게시글 조회에 실패하였습니다.',
+        errorMessage: 'Failed to retrieve post.',
       });
     }
   })
@@ -152,7 +152,7 @@ router
       const resultSchema = postSchema.validate(req.body);
       if (resultSchema.error) {
         return res.status(412).json({
-          errorMessage: '데이터 형식이 올바르지 않습니다.',
+          errorMessage: 'The data format is incorrect.',
         });
       }
 
@@ -165,12 +165,12 @@ router
         isRegexValidation(title, RE_HTML_ERROR)
       ) {
         return res.status(412).json({
-          errorMessage: '게시글 제목의 형식이 일치하지 않습니다.',
+          errorMessage: 'The format of the post title does not match.',
         });
       }
       if (!isRegexValidation(content, RE_CONTENT)) {
         return res.status(412).json({
-          errorMessage: '게시글 내용의 형식이 일치하지 않습니다.',
+          errorMessage: 'The format of the post content does not match.',
         });
       }
 
@@ -181,19 +181,19 @@ router
 
       if (updateCount < 1) {
         return res.status(401).json({
-          errorMessage: '게시글이 정상적으로 수정되지 않았습니다.',
+          errorMessage: 'The post was not properly edited.',
         });
       }
-      return res.status(200).json({ message: '게시글을 수정하였습니다.' });
+      return res.status(200).json({ message: 'Edited the post.' });
     } catch (error) {
       console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
       return res.status(400).json({
-        errorMessage: '게시글 수정에 실패하였습니다.',
+        errorMessage: 'Failed to edit post.',
       });
     }
   })
 
-  // 게시글 삭제
+  // delete post
   .delete(authMiddleware, async (req, res) => {
     try {
       const { postId } = req.params;
@@ -202,7 +202,7 @@ router
       const post = await Posts.findByPk(postId);
       if (!post) {
         return res.status(404).json({
-          errorMessage: '게시글이 존재하지 않습니다.',
+          errorMessage: 'The thread does not exist.',
         });
       }
 
@@ -210,15 +210,15 @@ router
 
       if (deleteCount < 1) {
         return res.status(401).json({
-          errorMessage: '게시글이 정상적으로 삭제되지 않았습니다.',
+          errorMessage: 'The post was not properly deleted.',
         });
       }
 
-      return res.status(201).json({ message: '게시글을 삭제하였습니다.' });
+      return res.status(201).json({ message: 'Post deleted.' });
     } catch (error) {
       console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
       return res.status(400).json({
-        errorMessage: '게시글 삭제에 실패하였습니다.',
+        errorMessage: 'Failed to delete post.',
       });
     }
   });

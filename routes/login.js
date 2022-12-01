@@ -24,7 +24,7 @@ router.post('/', authLoginUserMiddleware, async (req, res) => {
 
     if (!user) {
       return res.status(412).send({
-        errorMessage: '닉네임 또는 패스워드를 확인해주세요.',
+        errorMessage: 'Please check your nickname or password.',
       });
     }
 
@@ -44,7 +44,7 @@ router.post('/', authLoginUserMiddleware, async (req, res) => {
   } catch (error) {
     console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
     return res.status(400).send({
-      errorMessage: '로그인에 실패하였습니다.',
+      errorMessage: 'Login failed.',
     });
   }
 });

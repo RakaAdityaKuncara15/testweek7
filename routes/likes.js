@@ -6,7 +6,7 @@ const router = express.Router();
 
 router
   .route('/like')
-  // 좋아요 게시글 조회
+  // Look up like posts
   .get(authMiddleware, async (req, res) => {
     try {
       const { userId } = res.locals.user;
@@ -58,7 +58,7 @@ router
     } catch (error) {
       console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
       return res.status(400).json({
-        errorMessage: '좋아요 게시글 조회에 실패하였습니다.',
+        errorMessage: 'Failed to look up like posts.',
       });
     }
   });
@@ -75,7 +75,7 @@ router
 
       if (!isExist) {
         return res.status(404).json({
-          errorMessage: '게시글이 존재하지 않습니다.',
+          errorMessage: 'The thread does not exist.',
         });
       }
 
@@ -88,7 +88,7 @@ router
 
         return res
           .status(200)
-          .json({ message: '게시글의 좋아요를 등록하였습니다.' });
+          .json({ message: 'Registered to like the post.' });
       } else {
         await Likes.destroy({
           where: { postId, userId },
@@ -96,12 +96,12 @@ router
 
         return res
           .status(200)
-          .json({ message: '게시글의 좋아요를 취소하였습니다.' });
+          .json({ message: 'Unlike the post.' });
       }
     } catch (error) {
       console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
       return res.status(400).json({
-        errorMessage: '게시글 좋아요에 실패하였습니다.',
+        errorMessage: 'Failed to like the post.',
       });
     }
   });

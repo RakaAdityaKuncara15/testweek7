@@ -16,29 +16,29 @@ const userSchema = Joi.object({
 
 router.post('/', authLoginUserMiddleware, async (req, res) => {
   try {
-    //닉네임의 시작과 끝이 a-zA-Z0-9글자로 3 ~ 10 단어로 구성되어야 한다.
+    //The nickname must consist of 3 to 10 words with a-z A-Z 0-9 characters starting and ending.
     const { nickname, password, confirm } = await userSchema.validateAsync(
       req.body
     );
 
     if (password !== confirm) {
       return res.status(412).send({
-        errorMessage: '패스워드가 일치하지 않습니다.',
+        errorMessage: 'Passwords do not match.',
       });
     }
     if (nickname.search(re_nickname) === -1) {
       return res.status(412).send({
-        errorMessage: 'ID의 형식이 일치하지 않습니다.',
+        errorMessage: 'The format of the ID does not match.',
       });
     }
     if (password.search(re_password) === -1) {
       return res.status(412).send({
-        errorMessage: '패스워드 형식이 일치하지 않습니다.',
+        errorMessage: 'The password format does not match.',
       });
     }
     if (isRegexValidation(password, nickname)) {
       return res.status(412).send({
-        errorMessage: '패스워드에 닉네임이 포함되어 있습니다.',
+        errorMessage: 'Your password contains your nickname.',
       });
     }
     const user = await Users.findAll({
@@ -48,18 +48,18 @@ router.post('/', authLoginUserMiddleware, async (req, res) => {
 
     if (user.length) {
       return res.status(412).send({
-        errorMessage: '중복된 닉네임입니다.',
+        errorMessage: 'This is a duplicate nickname.',
       });
     }
-    //CreateAt 과 UpdateAt을 지정해주지 않아도 자동으로 값이 입력된다.
+    //Even if you do not designate "CreateAt" and "UpdateAt", values are automatically entered.
     await Users.create({ nickname, password });
-    console.log(`${nickname} 님이 가입하셨습니다.`);
+    console.log(`${nickname} has signed up`);
 
-    return res.status(201).send({ message: '회원 가입에 성공하였습니다.' });
+    return res.status(201).send({ message: 'You have successfully registered as a member.' });
   } catch (error) {
     console.log(`${req.method} ${req.originalUrl} : ${error.message}`);
     return res.status(400).send({
-      errorMessage: '요청한 데이터 형식이 올바르지 않습니다.',
+      errorMessage: 'The requested data format is not valid.',
     });
   }
 });
